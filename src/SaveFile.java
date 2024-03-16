@@ -1,8 +1,8 @@
 import java.io.*;
 
 public class SaveFile {
-    public static void save(String uid, InputStream fileInputStream, String fileName) throws IOException {
-        String directoryPath = "C:/Users/sarim/Downloads/FileForgeDrive/" + uid;
+    public static void save(String uid, InputStream fileInputStream, String fileName, String filePath) throws IOException {
+        String directoryPath = "C:/Users/sarim/Downloads/FileForgeDrive/" + uid + filePath;
         File directory = new File(directoryPath);
         if (!directory.exists()) {
             directory.mkdirs();
