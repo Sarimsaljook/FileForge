@@ -6,9 +6,6 @@ public class Main {
     public static void main(String[] args) throws IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
 
-        // Set up CORS headers for all endpoints
-        server.createContext("/", new CORSHandler());
-
         server.createContext("/upload", new UploadHandler());
         server.createContext("/read", new ReadHandler());
         server.createContext("/delete", new DeleteHandler());
@@ -20,18 +17,6 @@ public class Main {
         server.start();
 
         System.out.println("Server started on port 8000");
-    }
-
-    // Custom handler to set CORS headers
-    static class CORSHandler implements HttpHandler {
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-            Headers headers = exchange.getResponseHeaders();
-            headers.set("Access-Control-Allow-Origin", "*"); // Allow requests from all origins
-            headers.set("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-            headers.set("Access-Control-Allow-Headers", "Content-Type,Authorization"); // Add any custom headers you need
-            exchange.sendResponseHeaders(200, -1);
-        }
     }
 
     static class UploadHandler implements HttpHandler {
