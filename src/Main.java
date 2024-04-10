@@ -5,15 +5,33 @@ import com.sun.net.httpserver.*;
 public class Main {
     public static void main(String[] args) throws IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress(8000), 0);
+
+        // Set up CORS headers for all endpoints
+        server.createContext("/", new CORSHandler());
+
         server.createContext("/upload", new UploadHandler());
         server.createContext("/read", new ReadHandler());
         server.createContext("/delete", new DeleteHandler());
         server.createContext("/create-folder", new CreateFolderHandler());
         server.createContext("/delete-folder", new DeleteFolderHandler());
         server.createContext("/list-full-user-directory", new FolderListHandler());
-        server.setExecutor(null); // Use the default executor
+
+        server.setExecutor(null); // Default executor
         server.start();
+
         System.out.println("Server started on port 8000");
+    }
+
+    // Custom handler to set CORS headers
+    static class CORSHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            Headers headers = exchange.getResponseHeaders();
+            headers.set("Access-Control-Allow-Origin", "*"); // Allow requests from all origins
+            headers.set("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+            headers.set("Access-Control-Allow-Headers", "Content-Type,Authorization"); // Add any custom headers you need
+            exchange.sendResponseHeaders(200, -1);
+        }
     }
 
     static class UploadHandler implements HttpHandler {
@@ -23,8 +41,8 @@ public class Main {
                 String contentType = exchange.getRequestHeaders().getFirst("Content-Type");
                 if (contentType != null && contentType.startsWith("multipart/form-data")) {
                     Headers headers = exchange.getRequestHeaders();
-                    String uid = headers.getFirst("uid"); // Assuming UID is passed in the header
-                    String fileName = headers.getFirst("file-name"); // Assuming file name is passed in the header
+                    String uid = headers.getFirst("uid"); // UID is passed in the header
+                    String fileName = headers.getFirst("file-name"); // file name is passed in the header
                     String filePath = headers.getFirst("file-path");
                     InputStream inputStream = exchange.getRequestBody();
 
